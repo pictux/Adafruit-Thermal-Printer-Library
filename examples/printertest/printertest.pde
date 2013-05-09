@@ -11,20 +11,25 @@
   MIT license, all text above must be included in any redistribution.
  *************************************************************************/
 
-// If you're using Arduino 1.0 uncomment the next line:
-#include "SoftwareSerial.h"
-// If you're using Arduino 23 or earlier, uncomment the next line:
-//#include "NewSoftSerial.h"
-
 #include "Adafruit_Thermal.h"
 #include "adalogo.h"
 #include "adaqrcode.h"
 #include <avr/pgmspace.h>
 
-int printer_RX_Pin = 5;  // This is the green wire
-int printer_TX_Pin = 6;  // This is the yellow wire
+#ifdef __AVR_ATmega2560__  //if Arduino MEGA
+Adafruit_Thermal printer(&Serial1);	//Use a Hardware Serial
+HardwareSerial ptr = Serial1;
+#else 
+// If you're using Arduino 1.0 uncomment the next line:
+#include "SoftwareSerial.h"
+// If you're using Arduino 23 or earlier, uncomment the next line:
+//#include "NewSoftSerial.h"
 
-Adafruit_Thermal printer(printer_RX_Pin, printer_TX_Pin);
+const int printer_RX_Pin = 5; // This is the green wire
+const int printer_TX_Pin = 6; // This is the yellow wire
+SoftwareSerial ptr(printer_RX_Pin, printer_TX_Pin);	//use a Software Serial
+Adafruit_Thermal printer(&ptr);
+#endif
 
 void setup(){
   Serial.begin(9600);

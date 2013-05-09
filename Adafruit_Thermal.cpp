@@ -67,10 +67,25 @@ void Adafruit_Thermal::setTimes(unsigned long p, unsigned long f) {
   dotFeedTime  = f;
 }
 
+/*
 // Constructor
 Adafruit_Thermal::Adafruit_Thermal(int RX_Pin, int TX_Pin) {
   _RX_Pin = RX_Pin;
   _TX_Pin = TX_Pin;
+}
+*/
+
+// Constructor when using SoftwareSerial
+Adafruit_Thermal::Adafruit_Thermal(SoftwareSerial *ser) {
+  _hwprinter = NULL;
+  _printer = ser;
+}
+
+// Constructor when using HardwareSerial
+Adafruit_Thermal::Adafruit_Thermal(HardwareSerial *ser) {
+  _printer = NULL;
+  _hwprinter = ser;	
+  #define PRINTER_PRINT(a) _hwprinter->write(a); //quick & dirty
 }
 
 // The next four helper methods are used when issuing configuration
@@ -137,8 +152,10 @@ void Adafruit_Thermal::write(uint8_t c) {
 }
 
 void Adafruit_Thermal::begin(int heatTime) {
-  _printer = new SERIAL_IMPL(_RX_Pin, _TX_Pin);
-  _printer->begin(BAUDRATE);
+  //_printer = new SERIAL_IMPL(_RX_Pin, _TX_Pin);
+  //_printer->begin(BAUDRATE);
+  if(_printer) _printer->begin(BAUDRATE);
+  else         _hwprinter->begin(BAUDRATE);
 
   // The printer can't start receiving data immediately upon power up --
   // it needs a moment to cold boot and initialize.  Allow at least 1/2
